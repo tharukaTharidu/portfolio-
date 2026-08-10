@@ -1,0 +1,161 @@
+/* ============================================
+   CONTACT SECTION — CSS
+   Requires the theme variables below. If you're
+   dropping this into a page that already defines
+   --primary, --accent, --bg-alt etc. in :root,
+   you can delete this :root block.
+   ============================================ */
+:root {
+  --primary: #00d4ff;
+  --accent: #a855f7;
+  --bg: #0a0a0a;
+  --bg-alt: #111111;
+  --card-bg: #1f1f1f;
+  --input-bg: #222222;
+  --text: #ffffff;
+  --text-muted: #cccccc;
+  --border: #333333;
+  --border-soft: #1a1a1a;
+}
+[data-theme="light"] {
+  --primary: #00d4ff;
+  --accent: #a855f7;
+  --bg: #f7f7fb;
+  --bg-alt: #eef0f6;
+  --card-bg: #ffffff;
+  --input-bg: #f0f1f6;
+  --text: #14141a;
+  --text-muted: #45454f;
+  --border: #dcdce6;
+  --border-soft: #e5e5ef;
+}
+
+/* ===== Section shell ===== */
+#contact {
+  padding: 100px 5%;
+  max-width: none;
+  background: var(--bg-alt);
+}
+#contact > * {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+#contact h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 60px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===== Social / CV links row ===== */
+.contact-links {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+.btn-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 26px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.98rem;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  transition: 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-social:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-3px);
+}
+.btn-social.btn-cv-big {
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border: none;
+  color: white;
+}
+.btn-social.btn-cv-big:hover { color: white; opacity: 0.9; }
+
+/* Ripple click micro-interaction */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: rippleAnim 0.6s ease-out;
+  background: rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+}
+[data-theme="light"] .ripple { background: rgba(0, 0, 0, 0.15); }
+@keyframes rippleAnim {
+  to { transform: scale(2.6); opacity: 0; }
+}
+
+/* ===== Contact form card ===== */
+.contact-form-wrap {
+  max-width: 700px;
+  margin: 0 auto;
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  padding: 40px;
+  border-radius: 24px;
+}
+.contact-form-wrap input,
+.contact-form-wrap textarea {
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 20px;
+  background: var(--input-bg);
+  border: none;
+  border-radius: 12px;
+  color: var(--text);
+  font-family: inherit;
+}
+.contact-form-wrap textarea { resize: vertical; margin-bottom: 0; }
+.contact-form-wrap button {
+  width: 100%;
+  padding: 16px;
+  margin-top: 20px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  #contact { padding: 70px 6%; }
+  #contact h2 { font-size: 2.1rem; margin-bottom: 40px; }
+  .contact-form-wrap { padding: 24px; border-radius: 18px; }
+}
+
+/* ===== Scroll-reveal (used on h2 / links row / form card) ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.7s cubic-bezier(.16,.84,.44,1), transform 0.7s cubic-bezier(.16,.84,.44,1);
+}
+.reveal.zoom-in { transform: scale(0.92); }
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
