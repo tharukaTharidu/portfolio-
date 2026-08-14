@@ -1,0 +1,1 @@
+Clean & Professional "A modern, single-page portfolio for me that seamlessly blends interactive design and technical functionality—featuring dynamic theme switching, smooth visual animations, showcased projects, and an integrated AI assistant."
