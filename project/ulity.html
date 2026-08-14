@@ -26,6 +26,36 @@
       padding: 20px 0;
     }
 
+    /* DOWNLOAD / ACTION BAR */
+    .action-bar {
+      width: 210mm;
+      margin: 0 auto 15px auto;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-download {
+      background-color: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-download:hover {
+      background-color: #0369a1;
+      transform: translateY(-1px);
+    }
+
     .cv-card {
       width: 210mm;
       min-height: 297mm;
@@ -213,16 +243,23 @@
       margin-bottom: 3px;
     }
 
+    /* PRINT STYLES */
     @media print {
       body {
         background: white;
         padding: 0;
       }
+
+      .no-print {
+        display: none !important;
+      }
+
       .cv-card {
         box-shadow: none;
         width: 100%;
         min-height: 100vh;
       }
+
       @page {
         size: A4;
         margin: 0;
@@ -232,13 +269,24 @@
 </head>
 <body>
 
+  <!-- DOWNLOAD BUTTON BAR -->
+  <div class="action-bar no-print">
+    <button class="btn-download" onclick="window.print()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      Download CV
+    </button>
+  </div>
+
   <div class="cv-card">
     <!-- LEFT SIDEBAR -->
     <aside class="sidebar">
       <div class="profile-photo-wrap">
-        <!-- Updated local image file path -->
         <img 
-          src="D:/university(UOV)/SECOND%20YEAR/second%20semester/System%20analysis%20and%20design/day%2001/project/professionl%20img.jpg" 
+          src="D:\university(UOV)\SECOND YEAR\second semester\System analysis and design\day 01\project\professionl img.jpg"
           alt="K.D. Tharuka Tharindu" 
           class="profile-photo"
         >
