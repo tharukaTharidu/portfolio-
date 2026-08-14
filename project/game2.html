@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tharuka Runner Game</title>
+
+<style>
+* {margin:0; padding:0; box-sizing:border-box; font-family:sans-serif;}
+body {background:#000; color:white; overflow:hidden;}
+
+/* GAME UI */
+#scoreboard {
+  position:absolute;
+  top:10px;
+  left:10px;
+  font-size:20px;
+  color:#facc15;
+}
+
+#sidePanel {
+  position:absolute;
+  right:10px;
+  top:10px;
+  background:#111;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 0 15px rgba(250,204,21,0.3);
+}
+
+#sidePanel h3 {
+  margin-bottom:10px;
+  color:#facc15;
+}
+
+#gameover {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:32px;
+  text-align:center;
+  display:none;
+  color:#ff4444;
+}
+#gameover span {
+  display:block;
+  margin-top:20px;
+  font-size:18px;
+  color:#fff;
+}
+
+canvas {
+  display:block;
+  margin:0 auto;
+}
+</style>
+
+</head>
+<body>
+
+<div id="scoreboard">Score: 0 | Level: 1 | Speed: 5</div>
+
+<div id="sidePanel">
+  <h3>Stats</h3>
+  <p>🏆 High Score: <span id="highScore">0</span></p>
+  <p>📉 Low Score: <span id="lowScore">0</span></p>
+</div>
+
+<div id="gameover">
+  Game Over!
+  <span>Press Enter to Restart</span>
+</div>
+
+<canvas id="gameCanvas" width="800" height="400"></canvas>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+/* LOAD SAVED SCORES */
+let highScore = localStorage.getItem("highScore") || 0;
+let lowScore = localStorage.getItem("lowScore") || 0;
+
+document.getElementById('highScore').innerText = highScore;
+document.getElementById('lowScore').innerText = lowScore;
+
+/* GAME VARIABLES */
+let ball = {x:100, y:300, radius:20, dy:0, onGround:true};
+let gravity = 0.6;
+let jumpPower = -12;
+let keys = {};
+let obstacles = [];
+let obstacleTimer = 0;
+let obstacleInterval = 1500;
+
+let score = 0;
+let level = 1;
+let speed = 5;
+let gameOver = false;
+
+/* STAR BACKGROUND */
+const stars = [];
+for(let i=0;i<120;i++){
+    stars.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        r:Math.random()*2+1,
+        dx:Math.random()*1+0.5
+    });
+}
+
+/* CONTROLS */
+document.addEventListener('keydown', e => keys[e.code] = true);
+document.addEventListener('keyup', e => keys[e.code] = false);
+
+document.addEventListener('keydown', e => {
+  if(e.code === 'Enter' && gameOver) restartGame();
+});
+
+/* RESTART */
+function restartGame(){
+    updateScores();
+
+    ball = {x:100, y:300, radius:20, dy:0, onGround:true};
+    obstacles = [];
+    score = 0;
+    level = 1;
+    speed = 5;
+    gameOver = false;
+
+    document.getElementById('gameover').style.display = 'none';
+    animate();
+}
+
+/* UPDATE HIGH/LOW SCORE */
+function updateScores(){
+    if(score > highScore){
+        highScore = score;
+        localStorage.setItem("highScore", highScore);
+    }
+
+    if(lowScore == 0 || score < lowScore){
+        lowScore = score;
+        localStorage.setItem("lowScore", lowScore);
+    }
+
+    document.getElementById('highScore').innerText = highScore;
+    document.getElementById('lowScore').innerText = lowScore;
+}
+
+/* OBSTACLE */
+class Obstacle {
+    constructor(){
+        this.width = 30 + Math.random()*30;
+        this.height = 30 + Math.random()*60;
+        this.x = canvas.width;
+        this.y = canvas.height - this.height;
+    }
+    update(){
+        this.x -= speed;
+        ctx.fillStyle = '#ff4444';
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+}
+
+/* BALL */
+function drawBall(){
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2);
+    ctx.fillStyle = '#facc15';
+    ctx.fill();
+}
+
+function updateBall(){
+    if(keys['ArrowUp'] && ball.onGround){
+        ball.dy = jumpPower;
+        ball.onGround = false;
+    }
+
+    if(keys['ArrowLeft'] && ball.x > ball.radius) ball.x -= speed;
+    if(keys['ArrowRight'] && ball.x < canvas.width - ball.radius) ball.x += speed;
+
+    ball.dy += gravity;
+    ball.y += ball.dy;
+
+    if(ball.y + ball.radius >= canvas.height){
+        ball.y = canvas.height - ball.radius;
+        ball.dy = 0;
+        ball.onGround = true;
+    }
+
+    drawBall();
+}
+
+/* COLLISION */
+function checkCollision(ob){
+    let closestX = Math.max(ob.x, Math.min(ball.x, ob.x + ob.width));
+    let closestY = Math.max(ob.y, Math.min(ball.y, ob.y + ob.height));
+    let dx = ball.x - closestX;
+    let dy = ball.y - closestY;
+    return (dx*dx + dy*dy) < ball.radius*ball.radius;
+}
+
+/* LEVEL SYSTEM */
+function updateLevel(){
+    let newLevel = Math.floor(score / 50) + 1;
+    if(newLevel > level){
+        level = newLevel;
+        speed += 1;
+    }
+}
+
+/* BACKGROUND ANIMATION */
+function drawBackground(){
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "#fff";
+    stars.forEach(s=>{
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.fill();
+
+        s.x -= s.dx;
+        if(s.x < 0) s.x = canvas.width;
+    });
+}
+
+/* SCORE UI */
+function drawScore(){
+    document.getElementById('scoreboard').innerText =
+      `Score: ${score} | Level: ${level} | Speed: ${speed}`;
+}
+
+/* GAME LOOP */
+function animate(){
+    if(gameOver) return;
+
+    drawBackground();
+    updateBall();
+
+    obstacleTimer += 16;
+    if(obstacleTimer > obstacleInterval){
+        obstacles.push(new Obstacle());
+        obstacleTimer = 0;
+    }
+
+    obstacles.forEach((ob, index)=>{
+        ob.update();
+
+        if(checkCollision(ob)){
+            gameOver = true;
+            updateScores();
+            document.getElementById('gameover').style.display = 'block';
+        }
+
+        if(ob.x + ob.width < 0){
+            obstacles.splice(index,1);
+            score += 10;
+            updateLevel();
+        }
+    });
+
+    drawScore();
+    requestAnimationFrame(animate);
+}
+
+/* START */
+animate();
+</script>
+
+</body>
+</html>
